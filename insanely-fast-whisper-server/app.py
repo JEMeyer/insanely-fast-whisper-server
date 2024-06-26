@@ -6,12 +6,28 @@ from fastapi.responses import StreamingResponse, JSONResponse
 import uvicorn
 import logging
 import os
+import time
 import io
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = FastAPI()
+
+
+@app.middleware("http")
+async def log_duration(request: Request, call_next):
+    start_time = time.time()
+
+    # process request
+    response = await call_next(request)
+
+    # calculate duration
+    duration = time.time() - start_time
+    logger.info(f"Request to {request.url.path} took {duration:.2f} seconds")
+
+    return response
+
 
 # Initialize the pipeline
 # Assuming 1 gpu (will always be 0 since it'll be dockerized)
@@ -24,6 +40,8 @@ pipe = pipeline(
     if is_flash_attn_2_available()
     else {"attn_implementation": "sdpa"},
 )
+
+logger.info("GPU initialized")
 
 
 @app.post("/transcribe")
