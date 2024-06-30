@@ -27,7 +27,7 @@ async def log_duration(request: Request, call_next):
 @app.post("/transcribe")
 async def transcribe(
     file: UploadFile = File(...),
-    model_name: str = Body("openai/whisper-large-v3"),
+    model: str = Body("openai/whisper-large-v3"),
     task: str = Body("transcribe"),
     language: str = Body(None),
     chunk_length_s: int = Body(30),
@@ -40,7 +40,7 @@ async def transcribe(
 
         outputs = transcription_service.transcribe_file(
             temp_file_path,
-            model_name,
+            model,
             task,
             language,
             chunk_length_s,
@@ -57,7 +57,7 @@ async def transcribe(
 @app.post("/transcribe/stream")
 async def transcribe_stream(
     request: Request,
-    model_name: str = Body("openai/whisper-large-v3"),
+    model: str = Body("openai/whisper-large-v3"),
     task: str = Body("transcribe"),
     language: str = Body(None),
     chunk_length_s: int = Body(30),
@@ -74,7 +74,7 @@ async def transcribe_stream(
 
                 outputs = transcription_service.transcribe_stream(
                     audio_buffer,
-                    model_name,
+                    model,
                     task,
                     language,
                     chunk_length_s,
