@@ -4,19 +4,15 @@ import time
 from fastapi import FastAPI, Request, UploadFile, File, Body
 from fastapi.responses import StreamingResponse, JSONResponse
 import uvicorn
-from accelerate import Accelerator
 from transcription_service import TranscriptionService
 from utils import save_temp_file, remove_temp_file
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-accelerator = Accelerator()
-
 app = FastAPI()
 
-# Initialize the transcription service once at startup
-transcription_service = TranscriptionService(accelerator)
+transcription_service = TranscriptionService()
 
 
 @app.middleware("http")
@@ -31,6 +27,7 @@ async def log_duration(request: Request, call_next):
 @app.post("/transcribe")
 async def transcribe(
     file: UploadFile = File(...),
+    model_name: str = Body("openai/whisper-large-v3"),
     task: str = Body("transcribe"),
     language: str = Body(None),
     chunk_length_s: int = Body(30),
@@ -42,7 +39,13 @@ async def transcribe(
         temp_file_path = save_temp_file(contents, "temp_audio.wav")
 
         outputs = transcription_service.transcribe_file(
-            temp_file_path, task, language, chunk_length_s, batch_size, timestamp
+            temp_file_path,
+            model_name,
+            task,
+            language,
+            chunk_length_s,
+            batch_size,
+            timestamp,
         )
 
         remove_temp_file(temp_file_path)
@@ -54,6 +57,7 @@ async def transcribe(
 @app.post("/transcribe/stream")
 async def transcribe_stream(
     request: Request,
+    model_name: str = Body("openai/whisper-large-v3"),
     task: str = Body("transcribe"),
     language: str = Body(None),
     chunk_length_s: int = Body(30),
@@ -69,7 +73,13 @@ async def transcribe_stream(
                 audio_buffer.seek(0)
 
                 outputs = transcription_service.transcribe_stream(
-                    audio_buffer, task, language, chunk_length_s, batch_size, timestamp
+                    audio_buffer,
+                    model_name,
+                    task,
+                    language,
+                    chunk_length_s,
+                    batch_size,
+                    timestamp,
                 )
                 yield JSONResponse(content=outputs)
 
