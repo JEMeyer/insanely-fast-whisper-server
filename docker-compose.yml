@@ -36,7 +36,7 @@ services:
                 }
             }
         }
-    entrypoint: echo "$NGINX_CONF" > /tmp/nginx.conf && exec nginx -c /tmp/nginx.conf -g "daemon off;"'
+    entrypoint: /bin/sh -c 'echo "$NGINX_CONF" > /tmp/nginx.conf && exec nginx -c /tmp/nginx.conf -g "daemon off;"'
     depends_on:
       - whisper-server-##
     networks:
