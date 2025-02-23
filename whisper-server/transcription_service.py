@@ -1,5 +1,7 @@
 import torch
-from transformers import pipeline, is_flash_attn_2_available
+from transformers import pipeline
+from transformers.utils import is_flash_attn_2_available
+
 from typing import Dict
 
 
