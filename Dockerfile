@@ -2,7 +2,7 @@
 FROM pytorch/pytorch:2.3.0-cuda12.1-cudnn8-runtime
 
 # Install dependencies
-RUN apt-get update && apt-get install -y python3 python3-pip
+RUN apt-get update && apt-get install -y python3 python3-pip curl
 
 # Set the working directory in the container
 WORKDIR /app
