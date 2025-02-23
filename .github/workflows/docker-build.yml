@@ -33,4 +33,4 @@ jobs:
           context: .
           push: true
           tags: |
-            ghcr.io/${{ env.OWNER_LC }}/insanely-fast-whisper-server:latest
+            ghcr.io/${{ env.OWNER_LC }}/whisper-server:latest
