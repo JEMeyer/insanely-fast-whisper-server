@@ -4,8 +4,8 @@ import time
 from fastapi import FastAPI, Request, UploadFile, File, Body
 from fastapi.responses import StreamingResponse, JSONResponse
 import uvicorn
-from transcription_service import TranscriptionService
-from utils import save_temp_file, remove_temp_file
+from .transcription_service import TranscriptionService
+from .utils import save_temp_file, remove_temp_file
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -87,9 +87,11 @@ async def transcribe_stream(
     except Exception as e:
         return JSONResponse(content={"error": str(e)}, status_code=500)
 
+
 @app.get("/health")
 async def health():
     return {"status": "healthy"}
+
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)

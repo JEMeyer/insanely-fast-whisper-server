@@ -1,0 +1,29 @@
+services:
+  whisper-server-##:
+    image: ghcr.io/jemeyer/whisper-server:latest
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ['##']
+              capabilities: [gpu]
+    restart: unless-stopped
+    networks:
+      whisp-net:
+        aliases:
+          - whisper-server-##
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - "10000:80"
+    entrypoint: /bin/sh -c 'until getent hosts whisper-server-0; do echo "Waiting for whisper-server-0"; sleep 1; done; echo "$NGINX_CONF" > /tmp/nginx.conf && exec nginx -c /tmp/nginx.conf -g "daemon off;"'
+    depends_on:
+      - whisper-server-##
+    networks:
+      - whisp-net
+
+networks:
+  whisp-net:
+    driver: bridge
