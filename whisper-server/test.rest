@@ -1,0 +1,13 @@
+### Healthcheck
+GET {{whisperHost}}/health
+
+curl -X POST {{whisperHost}}/transcribe \
+     -F "file=@/path/to/file.wav" \
+     -F 'payload={
+       "model": "openai/whisper-large-v3",
+       "task": "transcribe",
+       "language": null,
+       "chunk_length_s": 30,
+       "batch_size": 24,
+       "timestamp": "word"
+     }'
